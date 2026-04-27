@@ -5,8 +5,12 @@ from listing import ListingManager
 from database import DatabaseManager
 import requests
 
-class ListingPipeline:
-    def __init__(self, ebay_token, remove_bg_key):
+class AutomationPipeline:
+    def __init__(self):
+        # 환경 변수 직접 로드
+        ebay_token = os.getenv("EBAY_ACCESS_TOKEN", "YOUR_TOKEN")
+        remove_bg_key = os.getenv("REMOVE_BG_KEY")
+        
         self.sourcing_engine = SourcingEngine()
         self.ai_studio = AIStudio(remove_bg_key=remove_bg_key)
         self.listing_manager = ListingManager(auth_token=ebay_token)
@@ -16,7 +20,7 @@ class ListingPipeline:
         if not os.path.exists(self.static_dir):
             os.makedirs(self.static_dir)
 
-    def process_url_to_ebay(self, url, user_id=1):
+    def run_full_pipeline(self, url, user_id=1):
         """
         Full workflow with Database logging for trend analysis.
         """
