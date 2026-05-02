@@ -20,7 +20,7 @@ class AutomationPipeline:
         if not os.path.exists(self.static_dir):
             os.makedirs(self.static_dir)
 
-    def run_full_pipeline(self, url, user_id=1):
+    def run_full_pipeline(self, url, user_id=1, do_list=False):
         """
         Full workflow with Database logging for trend analysis.
         """
@@ -57,10 +57,32 @@ class AutomationPipeline:
         # 4. Generate AI Metadata
         ai_metadata = self.ai_studio.analyze_product_with_ai(temp_original)
         
-        return {
+        result_data = {
             **ai_metadata,
             "title": product_data['title'],
             "original_price": product_data['price'],
             "image_path": processed_image_rel,
             "source": product_data['source']
         }
+
+        if do_list:
+            import time
+            sku = f"KGOODS_{int(time.time())}"
+            print(f"📦 eBay Sandbox API와 통신하여 재고(Inventory)에 상품({sku})을 등록합니다...")
+            
+            # eBay 제목 길이 제한 처리 (1~80자)
+            valid_title = result_data.get("title", "")
+            if not valid_title:
+                valid_title = "K-Goods Premium Product"
+            if len(valid_title) > 80:
+                valid_title = valid_title[:77] + "..."
+
+            # eBay Sandbox Inventory API 호출
+            item_data = {
+                "title": valid_title,
+                "description": result_data["description"],
+                "image_url": "https://i.ebayimg.com/images/g/example/s-l500.jpg" # API 테스트용 가짜 이미지 URL
+            }
+            self.listing_manager.create_or_replace_inventory_item(sku, item_data)
+
+        return result_data

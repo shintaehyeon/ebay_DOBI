@@ -22,7 +22,8 @@ def main():
 
     # 3. Full Pipeline 명령어 (수집 + AI + 리스팅)
     full_parser = subparsers.add_parser("auto", help="수집부터 리스팅까지 자동 실행")
-    full_parser.add_argument("--url", required=True, help="시작할 상품 URL")
+    full_parser.add_argument("--url", help="시작할 단일 상품 URL")
+    full_parser.add_argument("--file", help="대량 등록을 위한 URL 리스트 파일 (TXT 형식)")
     full_parser.add_argument("--list", action="store_true", help="실제 eBay 등록까지 진행")
 
     args = parser.parse_args()
@@ -44,8 +45,33 @@ def main():
         pass
 
     elif args.command == "auto":
-        print(f"🚀 전체 자동화 파이프라인 가동: {args.url}")
-        pipeline.run_full_pipeline(args.url)
+        if args.url:
+            print(f"🚀 단일 상품 자동화 파이프라인 가동: {args.url}")
+            pipeline.run_full_pipeline(args.url, do_list=args.list)
+        elif args.file:
+            print(f"📦 대량 자동화 파이프라인 가동: {args.file}")
+            if not os.path.exists(args.file):
+                print(f"❌ 파일을 찾을 수 없습니다: {args.file}")
+                return
+                
+            with open(args.file, 'r', encoding='utf-8') as f:
+                urls = [line.strip() for line in f.readlines() if line.strip() and not line.startswith('#')]
+                
+            print(f"📊 총 {len(urls)}개의 상품 URL을 발견했습니다. 대량 처리를 시작합니다...\n")
+            success_count = 0
+            for i, url in enumerate(urls, 1):
+                print("="*50)
+                print(f"▶️ [{i}/{len(urls)}] 작업 시작: {url}")
+                try:
+                    pipeline.run_full_pipeline(url, do_list=args.list)
+                    success_count += 1
+                except Exception as e:
+                    print(f"❌ 작업 실패: {e}")
+                    
+            print("="*50)
+            print(f"✅ 대량 등록 완료! (성공: {success_count}/{len(urls)})")
+        else:
+            print("❌ --url 또는 --file 옵션을 반드시 입력해주세요.")
 
     else:
         parser.print_help()

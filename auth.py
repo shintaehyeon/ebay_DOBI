@@ -17,13 +17,14 @@ class EBayAuth:
 
     def get_authorization_url(self, scopes):
         """Step 1: Generate Authorization URL for User Consent"""
+        from urllib.parse import urlencode
         params = {
             'client_id': self.client_id,
             'redirect_uri': self.redirect_uri,
             'response_type': 'code',
             'scope': ' '.join(scopes)
         }
-        return f"{self.auth_url}?{'&'.join([f'{k}={v}' for k, v in params.items()])}"
+        return f"{self.auth_url}?{urlencode(params)}"
 
     def exchange_code_for_token(self, auth_code):
         """Step 3: Exchange Authorization Code for Access Token"""
