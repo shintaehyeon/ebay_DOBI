@@ -45,3 +45,14 @@ python3 main.py auto --url "상품_상세_URL"
 
 ## 🛡 보안 공지
 - API 키와 개인정보는 `.env` 파일에 보관하며, 절대 버전 관리 시스템(Git)에 포함되지 않습니다.
+
+## 📌 최근 작업 로그
+
+- **Bulk registration**: `main.py`에 `--file` 옵션을 추가해 텍스트 파일에 있는 URL들을 한 번에 처리하도록 구현했습니다.
+- **Desktop GUI**: `gui_tkinter.py` (standard `tkinter`) 로 macOS 12 이하에서도 동작하는 그래픽 인터페이스를 제공했습니다.
+- **Title 길이 보정**: eBay API 요구사항에 맞춰 상품 제목을 자동 정제하도록 `pipeline.py`를 개선했습니다.
+- **Git 자동 커밋 & 푸시**: 현재 작업을 커밋하고 원격 저장소(GitHub)로 푸시했습니다.
+
+---
+
+> 이 프로젝트는 오픈소스이며, 자유롭게 포크·기여 가능합니다.

@@ -16,3 +16,7 @@ env/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Temporary uploads and generated images
+dashboard/static/*.jpg
+dashboard/static/*.png

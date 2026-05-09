@@ -5,3 +5,5 @@ cryptography
 rembg
 Pillow
 beautifulsoup4
+flask
+customtkinter
